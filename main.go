@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"crypto/tls"
 	"fmt"
 	"log"
@@ -10,6 +11,19 @@ import (
 
 	gomail "gopkg.in/mail.v2"
 )
+
+func genCaptchaCode() (string, error) {
+	codes := make([]byte, 6)
+	if _, err := rand.Read(codes); err != nil {
+		return "", err
+	}
+
+	for i := 0; i < 6; i++ {
+		codes[i] = uint8(48 + (codes[i] % 10))
+	}
+
+	return string(codes), nil
+}
 
 func main() {
 
@@ -30,8 +44,14 @@ func main() {
 	// Set E-Mail subject
 	m.SetHeader("Subject", "OTP to verify your Gmail")
 
+	//otp generation
+	onetimepassword, err := genCaptchaCode()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	// Set E-Mail body. You can set plain text or html with text/html
-	m.SetBody("text/plain", "741741 is your OTP to register to our site. Thank you registering to our site. Happy Shopping :)")
+	m.SetBody("text/plain", onetimepassword+" is your OTP to register to our site. Thank you registering to our site. Happy Shopping :)")
 
 	// Settings for SMTP server
 	d := gomail.NewDialer("smtp.gmail.com", 587, os.Getenv("SENDEREMAIL"), os.Getenv("PASSWORD"))
