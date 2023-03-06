@@ -33,10 +33,14 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	// get the email from the user :
+	fmt.Println("Enter The Email Address : ")
+	var Emmail string
+	fmt.Scan(&Emmail)
 	m := gomail.NewMessage()
 
 	// Set E-Mail sender
-	m.SetHeader("From", os.Getenv("SENDEREMAIL"))
+	m.SetHeader("From", Emmail)
 
 	// Set E-Mail receivers
 	m.SetHeader("To", os.Getenv("RECIEVEREMAIL"))
